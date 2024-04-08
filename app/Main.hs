@@ -49,6 +49,13 @@ main = do
 
   when (ix < 0) $ error "Lista de palavras não encontrada"
 
+  T.putStrLn "\ESC[92m████████╗\ESC[0m███████╗\ESC[91m██████╗ \ESC[92m███╗   ███╗ \ESC[0m██████╗ "
+  T.putStrLn "\ESC[92m╚══██╔══╝\ESC[0m██╔════╝\ESC[91m██╔══██╗\ESC[92m████╗ ████║\ESC[0m██╔═══██╗"
+  T.putStrLn "\ESC[92m   ██║   \ESC[0m█████╗  \ESC[91m██████╔╝\ESC[92m██╔████╔██║\ESC[0m██║   ██║"
+  T.putStrLn "\ESC[92m   ██║   \ESC[0m██╔══╝  \ESC[91m██╔══██╗\ESC[92m██║╚██╔╝██║\ESC[0m██║   ██║"
+  T.putStrLn "\ESC[92m   ██║   \ESC[0m███████╗\ESC[91m██║  ██║\ESC[92m██║ ╚═╝ ██║\ESC[0m╚██████╔╝"
+  T.putStrLn "\ESC[92m   ╚═╝   \ESC[0m╚══════╝\ESC[91m╚═╝  ╚═╝\ESC[92m╚═╝     ╚═╝ \ESC[0m╚═════╝ "
+
   T.putStrLn introString
 
   evalStateT (loop $ runMaybeT game) $
@@ -106,7 +113,7 @@ getWordMap = do
 
 introString :: T.Text
 introString =
-  "Bem vinda(o) ao Termo.hs!\nDigite "
+  "Bem vindo ao Termo.hs!\nDigite "
     <> color Green ":?"
     <> " para ajuda, "
     <> color Green ":l"
