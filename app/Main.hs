@@ -1,3 +1,4 @@
+-- Modulo principal
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main (main) where
@@ -36,6 +37,8 @@ import System.Console.Pretty
 import System.IO (BufferMode (NoBuffering), hSetBuffering, stdout)
 import System.Random (newStdGen, uniformR)
 
+-- Funcao principal
+
 main :: IO ()
 main = do
   hSetBuffering stdout NoBuffering
@@ -59,6 +62,8 @@ main = do
         _maxGuesses = 6
       }
 
+-- Tipo de dado para representar o estado do jogo
+
 data GameState = GS
   { _attemptMap :: !(M.Map Char CharacterStatus),
     _guesses :: !Word,
@@ -67,12 +72,16 @@ data GameState = GS
     _maxGuesses :: !Word
   }
 
+-- Tipo de dado para representar o status de um caractere
+
 data CharacterStatus
   = Untested
   | DoesntExist
   | WrongPlace
   | RightPlace
   deriving (Show, Eq, Ord)
+
+-- Funcao para obter o mapa de palavras do arquivo
 
 getWordMap :: IO (M.Map T.Text T.Text)
 getWordMap = do
@@ -93,6 +102,8 @@ getWordMap = do
     normalizeAccents 'Ç' = 'C'
     normalizeAccents cha = cha
 
+-- String de introducao
+
 introString :: T.Text
 introString =
   "Bem vinda(o) ao Termo.hs!\nDigite "
@@ -103,16 +114,26 @@ introString =
     <> color Green ":s"
     <> " para sair."
 
+-- Funcao principal do loop do jogo
+
 loop :: (Monad m) => m (Maybe a) -> m a
 loop action = action >>= maybe (loop action) pure
+
+-- Continuar o jogo
 
 continue :: Game a
 continue = mzero
 
+-- Funcao para imprimir uma linha
+
 printLnS :: (MonadIO m) => T.Text -> m ()
 printLnS = liftIO . T.putStrLn
 
+-- Tipo de dado para representar o jogo
+
 type Game a = MaybeT (StateT GameState IO) a
+
+-- Funcao principal do jogo
 
 game :: Game ()
 game = do
@@ -127,6 +148,8 @@ game = do
     ":?" -> drawHelp >> continue
     ":l" -> drawAttemptMap >> continue
     word -> makeAttempt $ T.toUpper word
+
+-- Funcao para fazer uma tentativa
 
 makeAttempt :: T.Text -> Game ()
 makeAttempt word = do
@@ -160,6 +183,8 @@ makeAttempt word = do
               modify (\s -> s {_guesses = _guesses s + 1})
               continue
 
+-- String de ajuda
+
 helpString :: T.Text
 helpString =
   style Bold "Regras\n\n"
@@ -182,11 +207,15 @@ helpString =
     <> colour DoesntExist " M "
     <> " A \nA letra M não existe na palavra.\n"
 
+-- Funcao de colorir o caractere baseado no status
+
 colour :: CharacterStatus -> T.Text -> T.Text
 colour Untested = id
 colour DoesntExist = style Bold . color Blue . bgColor White
 colour WrongPlace = style Bold . color White . bgColor Yellow
 colour RightPlace = style Bold . color White . bgColor Green
+
+-- Funcao para mostrar o mapa de tentativas
 
 showAttemptMap :: M.Map Char CharacterStatus -> T.Text
 showAttemptMap amap = T.concatMap showColoredChar letters
@@ -196,6 +225,8 @@ showAttemptMap amap = T.concatMap showColoredChar letters
       colour
         (M.findWithDefault Untested c amap)
         (showPrettyChar c)
+
+-- Funcao para exibir o numero de tentativas
 
 displayAttemptNumbers :: Game ()
 displayAttemptNumbers = do
@@ -208,8 +239,12 @@ displayAttemptNumbers = do
       <> show maxGuesses
       <> "]: "
 
+-- Funcao para exibir o caractere formatado
+
 showPrettyChar :: Char -> T.Text
 showPrettyChar c = T.cons ' ' $ T.cons c " "
+
+-- Funcao para mostrar a tentativa
 
 showAttempt :: T.Text -> T.Text -> Array Int CharacterStatus
 showAttempt attempt answer = runSTArray $ do
@@ -239,6 +274,8 @@ showAttempt attempt answer = runSTArray $ do
 
   pure res
 
+-- Funcao para renderizar a tentativa
+
 renderAttempt :: T.Text -> Array Int CharacterStatus -> T.Text
 renderAttempt word arr =
   T.concat $
@@ -246,6 +283,8 @@ renderAttempt word arr =
       (\c s -> colour s $ showPrettyChar c)
       (T.unpack word)
       (toList arr)
+
+-- Funcao para atualizar o mapa de tentativas
 
 updateAttemptMap ::
   T.Text ->
