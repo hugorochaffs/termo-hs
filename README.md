@@ -1,8 +1,8 @@
 # TERMO
 
-Para instalar dependencias: 
+## Para instalar dependencias:    
     cabal install --dependencies-only --overwrite-policy=always
-Para fazer a build:
+## Para fazer a build:    
     cabal build
-Para rodar o jogo:
+## Para rodar o jogo:    
     cabal run
